@@ -40,7 +40,6 @@ export default async function AboutPage() {
   const contactLine = [profile?.email, profile?.github, profile?.location]
     .filter(Boolean)
     .join(" ・ ");
-  const initial = (englishName || displayName || "J").charAt(0).toUpperCase();
 
   return (
     <main className="relative flex-1 overflow-hidden bg-[#05070d] text-slate-100">
@@ -97,16 +96,13 @@ export default async function AboutPage() {
             <div className="pointer-events-none absolute bottom-0 right-0 h-6 w-6 border-b-2 border-r-2 border-cyan-400/70" />
 
             <div className="relative flex h-56 w-56 items-center justify-center rounded-full bg-gradient-to-br from-cyan-400 via-blue-500 to-fuchsia-500 shadow-[0_0_50px_rgba(34,211,238,0.4)]">
-              {profile?.avatar_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={profile.avatar_url}
-                  alt={displayName}
-                  className="h-52 w-52 rounded-full object-cover"
-                />
-              ) : (
-                <span className="font-mono text-7xl font-bold text-white/90">{initial}</span>
-              )}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={profile?.avatar_url || "/pixel-warrior-avatar.svg"}
+                alt={displayName}
+                className="h-52 w-52 rounded-full object-cover"
+                style={{ imageRendering: "pixelated" }}
+              />
             </div>
 
             <div className="absolute -bottom-2 left-2 rounded border border-orange-400/60 bg-slate-950/90 px-3 py-1 font-mono text-xs font-semibold text-orange-300 shadow-[0_0_12px_rgba(251,146,60,0.4)]">
