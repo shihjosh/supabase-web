@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import SubmitButton from "@/components/submit-button";
 import {
   updateProfile,
   createExperience,
@@ -147,12 +148,12 @@ export default async function AdminAboutPage({
             />
           </div>
 
-          <button
-            type="submit"
-            className="mt-2 h-11 self-start rounded-md border border-cyan-400/60 bg-cyan-500/20 px-8 text-sm font-semibold text-cyan-200 shadow-[0_0_20px_rgba(34,211,238,0.25)] transition hover:bg-cyan-500/30"
+          <SubmitButton
+            pendingText="儲存中..."
+            className="mt-2 h-11 self-start rounded-md border border-cyan-400/60 bg-cyan-500/20 px-8 text-sm font-semibold text-cyan-200 shadow-[0_0_20px_rgba(34,211,238,0.25)] transition hover:bg-cyan-500/30 disabled:cursor-not-allowed disabled:opacity-60"
           >
             儲存基本資料
-          </button>
+          </SubmitButton>
         </form>
       </section>
 
@@ -207,15 +208,15 @@ export default async function AdminAboutPage({
                       placeholder="排序"
                       className={`w-24 ${smallInputClass}`}
                     />
-                    <button type="submit" className={saveBtnClass}>
+                    <SubmitButton pendingText="儲存中..." className={saveBtnClass}>
                       儲存
-                    </button>
+                    </SubmitButton>
                   </div>
                 </form>
                 <form action={deleteWithId} className="mt-2">
-                  <button type="submit" className={deleteBtnClass}>
+                  <SubmitButton pendingText="刪除中..." className={deleteBtnClass}>
                     刪除
-                  </button>
+                  </SubmitButton>
                 </form>
               </div>
             );
@@ -237,9 +238,9 @@ export default async function AdminAboutPage({
               placeholder="排序（數字越小越前面）"
               className={`w-40 ${smallInputClass}`}
             />
-            <button type="submit" className={`self-start ${addBtnClass}`}>
+            <SubmitButton pendingText="新增中..." className={`self-start ${addBtnClass}`}>
               新增
-            </button>
+            </SubmitButton>
           </form>
         </details>
       </section>
@@ -283,14 +284,14 @@ export default async function AdminAboutPage({
                     defaultValue={skill.sort}
                     className={`w-20 ${smallInputClass}`}
                   />
-                  <button type="submit" className={saveBtnClass}>
+                  <SubmitButton pendingText="儲存中..." className={saveBtnClass}>
                     儲存
-                  </button>
+                  </SubmitButton>
                 </form>
                 <form action={deleteWithId}>
-                  <button type="submit" className={deleteBtnClass}>
+                  <SubmitButton pendingText="刪除中..." className={deleteBtnClass}>
                     刪除
-                  </button>
+                  </SubmitButton>
                 </form>
               </div>
             );
@@ -319,9 +320,9 @@ export default async function AdminAboutPage({
               placeholder="排序"
               className={`w-24 ${smallInputClass}`}
             />
-            <button type="submit" className={addBtnClass}>
+            <SubmitButton pendingText="新增中..." className={addBtnClass}>
               新增
-            </button>
+            </SubmitButton>
           </form>
         </details>
       </section>
@@ -368,14 +369,14 @@ export default async function AdminAboutPage({
                     defaultValue={cert.sort}
                     className={`w-20 ${smallInputClass}`}
                   />
-                  <button type="submit" className={saveBtnClass}>
+                  <SubmitButton pendingText="儲存中..." className={saveBtnClass}>
                     儲存
-                  </button>
+                  </SubmitButton>
                 </form>
                 <form action={deleteWithId}>
-                  <button type="submit" className={deleteBtnClass}>
+                  <SubmitButton pendingText="刪除中..." className={deleteBtnClass}>
                     刪除
-                  </button>
+                  </SubmitButton>
                 </form>
               </div>
             );
@@ -401,9 +402,9 @@ export default async function AdminAboutPage({
               placeholder="排序"
               className={`w-24 ${smallInputClass}`}
             />
-            <button type="submit" className={addBtnClass}>
+            <SubmitButton pendingText="新增中..." className={addBtnClass}>
               新增
-            </button>
+            </SubmitButton>
           </form>
         </details>
       </section>

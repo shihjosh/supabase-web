@@ -1,4 +1,5 @@
 import { login } from "./actions";
+import SubmitButton from "@/components/submit-button";
 
 export const metadata = {
   title: "登入 | Josh",
@@ -60,12 +61,12 @@ export default async function LoginPage({
 
         {error && <p className="text-sm text-red-400">{error}</p>}
 
-        <button
-          type="submit"
-          className="mt-2 h-11 rounded-md border border-cyan-400/60 bg-cyan-500/20 text-sm font-semibold text-cyan-200 shadow-[0_0_20px_rgba(34,211,238,0.25)] transition hover:bg-cyan-500/30"
+        <SubmitButton
+          pendingText="登入中..."
+          className="mt-2 h-11 rounded-md border border-cyan-400/60 bg-cyan-500/20 text-sm font-semibold text-cyan-200 shadow-[0_0_20px_rgba(34,211,238,0.25)] transition hover:bg-cyan-500/30 disabled:cursor-not-allowed disabled:opacity-60"
         >
           登入
-        </button>
+        </SubmitButton>
       </form>
     </main>
   );

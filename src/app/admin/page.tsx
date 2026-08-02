@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { logout } from "@/app/login/actions";
 import { deletePost } from "./actions";
+import SubmitButton from "@/components/submit-button";
 
 export const metadata = {
   title: "後台管理 | Josh",
@@ -48,12 +49,12 @@ export default async function AdminPage() {
             新增文章
           </Link>
           <form action={logout}>
-            <button
-              type="submit"
-              className="flex h-10 items-center justify-center rounded-md border border-slate-700 px-5 text-sm font-medium text-slate-300 transition-colors hover:border-red-400/50 hover:text-red-300"
+            <SubmitButton
+              pendingText="登出中..."
+              className="flex h-10 items-center justify-center rounded-md border border-slate-700 px-5 text-sm font-medium text-slate-300 transition-colors hover:border-red-400/50 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-60"
             >
               登出
-            </button>
+            </SubmitButton>
           </form>
         </div>
       </div>
@@ -98,12 +99,12 @@ export default async function AdminPage() {
                   await deletePost(post.id);
                 }}
               >
-                <button
-                  type="submit"
-                  className="rounded-md border border-red-500/30 px-4 py-1.5 text-sm text-red-400 transition-colors hover:bg-red-950/40"
+                <SubmitButton
+                  pendingText="刪除中..."
+                  className="rounded-md border border-red-500/30 px-4 py-1.5 text-sm text-red-400 transition-colors hover:bg-red-950/40 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   刪除
-                </button>
+                </SubmitButton>
               </form>
             </div>
           </div>
