@@ -8,37 +8,41 @@ export default async function Home() {
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-10 px-6 py-24 text-center">
+      <span className="inline-flex items-center gap-2 rounded border border-cyan-500/40 bg-cyan-500/10 px-3 py-1 font-mono text-xs tracking-widest text-cyan-400">
+        ▶ SYSTEM ONLINE
+      </span>
+
       <div className="flex flex-col items-center gap-4">
-        <h1 className="text-4xl font-semibold tracking-tight text-black dark:text-zinc-50">
-          你好，我是 Josh 👋
+        <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
+          你好，我是 <span className="text-cyan-400">Josh</span> 👋
         </h1>
-        <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-          歡迎來到我的個人網站。這裡有我的履歷 / 自我介紹，也有我不定期更新的部落格。
+        <p className="max-w-md text-lg leading-8 text-slate-400">
+          歡迎來到我的個人網站。這裡有我的自我介紹，也有我不定期更新的部落格。
         </p>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <Link
           href="/about"
-          className="flex h-12 items-center justify-center rounded-full bg-black px-6 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+          className="flex h-12 items-center justify-center rounded-md border border-cyan-400/60 bg-cyan-500/20 px-6 text-sm font-semibold text-cyan-200 shadow-[0_0_20px_rgba(34,211,238,0.25)] transition hover:bg-cyan-500/30"
         >
-          查看履歷 / 自我介紹
+          ⚔️ 查看自我介紹
         </Link>
         <Link
           href="/blog"
-          className="flex h-12 items-center justify-center rounded-full border border-zinc-300 px-6 text-sm font-medium text-black transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-50 dark:hover:bg-zinc-900"
+          className="flex h-12 items-center justify-center rounded-md border border-slate-600 px-6 text-sm font-semibold text-slate-300 transition hover:border-slate-400 hover:text-white"
         >
-          閱讀部落格
+          📜 閱讀部落格
         </Link>
       </div>
 
-      <div className="flex items-center gap-2 rounded-full border border-zinc-200 px-4 py-2 text-xs dark:border-zinc-700">
+      <div className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/60 px-4 py-2 font-mono text-xs">
         <span
           className={`h-2 w-2 rounded-full ${
-            connected ? "bg-green-500" : "bg-red-500"
+            connected ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" : "bg-red-500"
           }`}
         />
-        <span className="text-zinc-500 dark:text-zinc-400">
+        <span className="text-slate-400">
           Supabase 連線狀態：{connected ? "正常" : "異常"}
         </span>
       </div>

@@ -24,24 +24,33 @@ export default async function AdminPage() {
     <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
       <div className="mb-10 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-black dark:text-zinc-50">
-            後台管理
-          </h1>
-          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-500">
-            {user?.email}
-          </p>
+          <div className="mb-2 flex items-center gap-3">
+            <h1 className="text-2xl font-bold tracking-tight text-white">
+              後台管理
+            </h1>
+            <span className="rounded border border-cyan-500/40 bg-cyan-500/10 px-2 py-0.5 font-mono text-xs text-cyan-400">
+              ADMIN TERMINAL
+            </span>
+          </div>
+          <p className="font-mono text-sm text-slate-500">{user?.email}</p>
         </div>
         <div className="flex items-center gap-3">
           <Link
+            href="/admin/about"
+            className="flex h-10 items-center justify-center rounded-md border border-slate-700 px-5 text-sm font-medium text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-cyan-300"
+          >
+            編輯自我介紹
+          </Link>
+          <Link
             href="/admin/new"
-            className="flex h-10 items-center justify-center rounded-full bg-black px-5 text-sm font-medium text-white transition-colors hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+            className="flex h-10 items-center justify-center rounded-md border border-cyan-400/60 bg-cyan-500/20 px-5 text-sm font-semibold text-cyan-200 shadow-[0_0_16px_rgba(34,211,238,0.2)] transition hover:bg-cyan-500/30"
           >
             新增文章
           </Link>
           <form action={logout}>
             <button
               type="submit"
-              className="flex h-10 items-center justify-center rounded-full border border-zinc-300 px-5 text-sm font-medium text-black transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-50 dark:hover:bg-zinc-900"
+              className="flex h-10 items-center justify-center rounded-md border border-slate-700 px-5 text-sm font-medium text-slate-300 transition-colors hover:border-red-400/50 hover:text-red-300"
             >
               登出
             </button>
@@ -49,26 +58,28 @@ export default async function AdminPage() {
         </div>
       </div>
 
-      {error && <p className="text-sm text-red-500">{error.message}</p>}
+      {error && <p className="text-sm text-red-400">{error.message}</p>}
 
-      <div className="flex flex-col divide-y divide-zinc-200 dark:divide-zinc-800">
+      <div className="flex flex-col gap-3">
         {posts?.map((post) => (
           <div
             key={post.id}
-            className="flex items-center justify-between gap-4 py-4"
+            className="flex items-center justify-between gap-4 rounded-xl border border-slate-800 bg-slate-900/40 px-4 py-4"
           >
             <div className="flex min-w-0 flex-col">
               <div className="flex items-center gap-2">
                 <span
                   className={`h-2 w-2 shrink-0 rounded-full ${
-                    post.published ? "bg-green-500" : "bg-zinc-400"
+                    post.published
+                      ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"
+                      : "bg-slate-500"
                   }`}
                 />
-                <h2 className="truncate font-medium text-black dark:text-zinc-50">
+                <h2 className="truncate font-medium text-white">
                   {post.title}
                 </h2>
               </div>
-              <p className="truncate text-sm text-zinc-500 dark:text-zinc-500">
+              <p className="truncate font-mono text-sm text-slate-500">
                 /blog/{post.slug} ・{" "}
                 {new Date(post.created_at).toLocaleDateString("zh-TW")} ・{" "}
                 {post.published ? "已發佈" : "草稿"}
@@ -77,7 +88,7 @@ export default async function AdminPage() {
             <div className="flex shrink-0 items-center gap-2">
               <Link
                 href={`/admin/${post.id}`}
-                className="rounded-full border border-zinc-300 px-4 py-1.5 text-sm text-black transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-50 dark:hover:bg-zinc-900"
+                className="rounded-md border border-slate-700 px-4 py-1.5 text-sm text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-cyan-300"
               >
                 編輯
               </Link>
@@ -89,7 +100,7 @@ export default async function AdminPage() {
               >
                 <button
                   type="submit"
-                  className="rounded-full border border-red-200 px-4 py-1.5 text-sm text-red-600 transition-colors hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
+                  className="rounded-md border border-red-500/30 px-4 py-1.5 text-sm text-red-400 transition-colors hover:bg-red-950/40"
                 >
                   刪除
                 </button>
@@ -99,7 +110,7 @@ export default async function AdminPage() {
         ))}
 
         {!error && (!posts || posts.length === 0) && (
-          <p className="py-8 text-center text-zinc-500 dark:text-zinc-400">
+          <p className="py-8 text-center text-slate-500">
             還沒有文章，點右上角「新增文章」開始寫作。
           </p>
         )}

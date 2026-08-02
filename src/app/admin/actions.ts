@@ -12,6 +12,17 @@ function slugify(input: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+function parseTags(input: string) {
+  return Array.from(
+    new Set(
+      input
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+    )
+  );
+}
+
 export async function createPost(formData: FormData) {
   const supabase = await createClient();
 
@@ -19,6 +30,7 @@ export async function createPost(formData: FormData) {
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
   const published = formData.get("published") === "on";
+  const tags = parseTags(String(formData.get("tags") ?? ""));
   let slug = String(formData.get("slug") ?? "").trim();
 
   if (!slug) {
@@ -37,6 +49,7 @@ export async function createPost(formData: FormData) {
     excerpt: excerpt || null,
     content,
     published,
+    tags,
   });
 
   if (error) {
@@ -55,6 +68,7 @@ export async function updatePost(id: string, formData: FormData) {
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
   const published = formData.get("published") === "on";
+  const tags = parseTags(String(formData.get("tags") ?? ""));
   const slug = slugify(String(formData.get("slug") ?? "").trim());
 
   if (!title || !content || !slug) {
@@ -69,6 +83,7 @@ export async function updatePost(id: string, formData: FormData) {
       excerpt: excerpt || null,
       content,
       published,
+      tags,
     })
     .eq("id", id);
 
