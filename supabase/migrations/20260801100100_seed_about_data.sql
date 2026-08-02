@@ -1,7 +1,7 @@
 -- 匯入施家訓的 104 履歷真實資料
 
 update public.about_profile set
-  name = '施家訓',
+  name = 'Josh',
   english_name = 'Josh',
   title = '軟體工程師 / 雲端工程師',
   bio = '面對日新月異的科技，積極學習是我面對挑戰的態度。8~9 年軟體開發經驗，專注於雲端架構規劃（AWS / GCP）、容器化技術（Docker / Kubernetes）、CI/CD 自動化部署與全端系統開發。曾負責智慧製造系統的軟體架構設計、IoT 雲端建置與微服務開發，樂於與團隊夥伴討論與分享技術，持續提升彼此的工作效率。',
