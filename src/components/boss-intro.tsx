@@ -7,22 +7,16 @@ type Stage = "flash" | "vs" | "curtain" | "done";
 export default function BossIntro() {
   const [stage, setStage] = useState<Stage>("flash");
   const [hpFilled, setHpFilled] = useState(false);
-  const [skip, setSkip] = useState(false);
 
   useEffect(() => {
-    // 已看過開場動畫的訪客，在同一個瀏覽器分頁工作階段內不重複播放
-    if (typeof window !== "undefined" && sessionStorage.getItem("bossIntroPlayed")) {
-      setStage("done");
-      setSkip(true);
-      return;
-    }
+    setStage("flash");
+    setHpFilled(false);
 
     const t1 = setTimeout(() => setStage("vs"), 1800);
     const t2 = setTimeout(() => setHpFilled(true), 2100);
     const t3 = setTimeout(() => setStage("curtain"), 3600);
     const t4 = setTimeout(() => {
       setStage("done");
-      sessionStorage.setItem("bossIntroPlayed", "1");
     }, 4300);
 
     return () => {
@@ -33,7 +27,7 @@ export default function BossIntro() {
     };
   }, []);
 
-  if (stage === "done" || skip) return null;
+  if (stage === "done") return null;
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden bg-black">
