@@ -8,11 +8,17 @@ export default async function Home() {
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-10 px-6 py-24 text-center">
-      <span className="inline-flex items-center gap-2 rounded border border-cyan-500/40 bg-cyan-500/10 px-3 py-1 font-mono text-xs tracking-widest text-cyan-400">
+      <span
+        className="animate-boot-flicker inline-flex items-center gap-2 rounded border border-cyan-500/40 bg-cyan-500/10 px-3 py-1 font-mono text-xs tracking-widest text-cyan-400"
+        style={{ animationDelay: "0.1s" }}
+      >
         ▶ SYSTEM ONLINE
       </span>
 
-      <div className="flex flex-col items-center gap-4">
+      <div
+        className="animate-fade-up flex flex-col items-center gap-4"
+        style={{ animationDelay: "0.3s" }}
+      >
         <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
           你好，我是 <span className="text-cyan-400">Josh</span> 👋
         </h1>
@@ -21,7 +27,10 @@ export default async function Home() {
         </p>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div
+        className="animate-fade-up flex flex-col gap-3 sm:flex-row"
+        style={{ animationDelay: "0.55s" }}
+      >
         <Link
           href="/about"
           className="flex h-12 items-center justify-center rounded-md border border-cyan-400/60 bg-cyan-500/20 px-6 text-sm font-semibold text-cyan-200 shadow-[0_0_20px_rgba(34,211,238,0.25)] transition hover:bg-cyan-500/30"
@@ -36,7 +45,10 @@ export default async function Home() {
         </Link>
       </div>
 
-      <div className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/60 px-4 py-2 font-mono text-xs">
+      <div
+        className="animate-fade-up flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/60 px-4 py-2 font-mono text-xs"
+        style={{ animationDelay: "0.8s" }}
+      >
         <span
           className={`h-2 w-2 rounded-full ${
             connected ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" : "bg-red-500"
