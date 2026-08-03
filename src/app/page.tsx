@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import BossIntro from "@/components/boss-intro";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -8,6 +9,7 @@ export default async function Home() {
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-10 px-6 py-24 text-center">
+      <BossIntro />
       <span
         className="animate-boot-flicker inline-flex items-center gap-2 rounded border border-cyan-500/40 bg-cyan-500/10 px-3 py-1 font-mono text-xs tracking-widest text-cyan-400"
         style={{ animationDelay: "0.1s" }}
