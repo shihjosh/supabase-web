@@ -7,6 +7,8 @@ export const metadata = {
 
 export const revalidate = 0;
 
+const PAGE_SIZE = 10;
+
 function extractFirstImage(content: string | null | undefined): string | null {
   if (!content) return null;
   // Markdown 圖片語法 ![alt](url)
@@ -21,22 +23,30 @@ function extractFirstImage(content: string | null | undefined): string | null {
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tag?: string }>;
+  searchParams: Promise<{ tag?: string; page?: string }>;
 }) {
-  const { tag } = await searchParams;
+  const { tag, page: pageParam } = await searchParams;
+  const currentPage = Math.max(1, Number(pageParam) || 1);
+  const from = (currentPage - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
   const supabase = await createClient();
 
   let query = supabase
     .from("posts")
-    .select("slug, title, excerpt, created_at, tags, content")
+    .select("slug, title, excerpt, created_at, tags, content", { count: "exact" })
     .eq("published", true)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .range(from, to);
 
   if (tag) {
     query = query.contains("tags", [tag]);
   }
 
-  const { data: posts, error } = await query;
+  const { data: posts, error, count } = await query;
+
+  const totalCount = count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
   // 取得所有已發佈文章的標籤，用來顯示標籤雲
   const { data: tagRows } = await supabase
@@ -147,6 +157,66 @@ export default async function BlogPage({
           );
         })}
       </div>
+
+      {totalPages > 1 && (
+        <div className="mt-10 flex items-center justify-center gap-2 font-mono text-sm">
+          <Link
+            href={{
+              pathname: "/blog",
+              query: {
+                ...(tag ? { tag } : {}),
+                ...(currentPage > 1 ? { page: currentPage - 1 } : {}),
+              },
+            }}
+            aria-disabled={currentPage <= 1}
+            className={`rounded-md border px-3 py-1.5 transition-colors ${
+              currentPage <= 1
+                ? "pointer-events-none border-slate-800 text-slate-600"
+                : "border-slate-700 text-slate-300 hover:border-cyan-400/50 hover:text-cyan-300"
+            }`}
+          >
+            ← 上一頁
+          </Link>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <Link
+              key={p}
+              href={{
+                pathname: "/blog",
+                query: {
+                  ...(tag ? { tag } : {}),
+                  ...(p > 1 ? { page: p } : {}),
+                },
+              }}
+              className={`rounded-md border px-3 py-1.5 transition-colors ${
+                p === currentPage
+                  ? "border-cyan-400 bg-cyan-500/20 text-cyan-200 shadow-[0_0_10px_rgba(34,211,238,0.3)]"
+                  : "border-slate-700 text-slate-400 hover:border-slate-500 hover:text-slate-200"
+              }`}
+            >
+              {p}
+            </Link>
+          ))}
+
+          <Link
+            href={{
+              pathname: "/blog",
+              query: {
+                ...(tag ? { tag } : {}),
+                page: Math.min(totalPages, currentPage + 1),
+              },
+            }}
+            aria-disabled={currentPage >= totalPages}
+            className={`rounded-md border px-3 py-1.5 transition-colors ${
+              currentPage >= totalPages
+                ? "pointer-events-none border-slate-800 text-slate-600"
+                : "border-slate-700 text-slate-300 hover:border-cyan-400/50 hover:text-cyan-300"
+            }`}
+          >
+            下一頁 →
+          </Link>
+        </div>
+      )}
     </main>
   );
 }
