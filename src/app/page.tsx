@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import BossIntro from "@/components/boss-intro";
+import BattlefieldBackground from "@/components/battlefield-background";
 
 export default async function Home() {
   const supabase = await createClient();
@@ -8,17 +9,18 @@ export default async function Home() {
   const connected = !error;
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-10 px-6 py-24 text-center">
+    <main className="relative mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-10 overflow-hidden px-6 py-24 text-center">
+      <BattlefieldBackground />
       <BossIntro />
       <span
-        className="animate-boot-flicker inline-flex items-center gap-2 rounded border border-cyan-500/40 bg-cyan-500/10 px-3 py-1 font-mono text-xs tracking-widest text-cyan-400"
+        className="animate-boot-flicker relative z-10 inline-flex items-center gap-2 rounded border border-cyan-500/40 bg-cyan-500/10 px-3 py-1 font-mono text-xs tracking-widest text-cyan-400"
         style={{ animationDelay: "0.1s" }}
       >
         ▶ SYSTEM ONLINE
       </span>
 
       <div
-        className="animate-fade-up flex flex-col items-center gap-4"
+        className="animate-fade-up relative z-10 flex flex-col items-center gap-4"
         style={{ animationDelay: "0.3s" }}
       >
         <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
@@ -30,7 +32,7 @@ export default async function Home() {
       </div>
 
       <div
-        className="animate-fade-up flex flex-col gap-3 sm:flex-row"
+        className="animate-fade-up relative z-10 flex flex-col gap-3 sm:flex-row"
         style={{ animationDelay: "0.55s" }}
       >
         <Link
@@ -48,7 +50,7 @@ export default async function Home() {
       </div>
 
       <div
-        className="animate-fade-up flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/60 px-4 py-2 font-mono text-xs"
+        className="animate-fade-up relative z-10 flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900/60 px-4 py-2 font-mono text-xs"
         style={{ animationDelay: "0.8s" }}
       >
         <span
