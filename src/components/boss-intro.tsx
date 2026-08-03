@@ -17,13 +17,13 @@ export default function BossIntro() {
       return;
     }
 
-    const t1 = setTimeout(() => setStage("vs"), 1000);
-    const t2 = setTimeout(() => setHpFilled(true), 1300);
-    const t3 = setTimeout(() => setStage("curtain"), 2600);
+    const t1 = setTimeout(() => setStage("vs"), 1800);
+    const t2 = setTimeout(() => setHpFilled(true), 2100);
+    const t3 = setTimeout(() => setStage("curtain"), 3600);
     const t4 = setTimeout(() => {
       setStage("done");
       sessionStorage.setItem("bossIntroPlayed", "1");
-    }, 3300);
+    }, 4300);
 
     return () => {
       clearTimeout(t1);
@@ -50,7 +50,7 @@ export default function BossIntro() {
       >
         {stage === "flash" && (
           <p className="font-mono text-3xl font-black tracking-[0.3em] text-red-400 drop-shadow-[0_0_20px_rgba(248,113,113,0.8)] sm:text-5xl">
-            !! 遭遇戰 !!
+            !! ENCOUNTER !!
           </p>
         )}
 
