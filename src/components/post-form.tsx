@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import SubmitButton from "./submit-button";
 import MarkdownContent from "./markdown-content";
+import ImageUploader from "./image-uploader";
 
 const inputClass =
   "rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-white outline-none focus:border-cyan-400";
@@ -30,6 +31,28 @@ export default function PostForm({
   const [title, setTitle] = useState(defaultValues?.title ?? "");
   const [content, setContent] = useState(defaultValues?.content ?? "");
   const [tab, setTab] = useState<"edit" | "preview">("edit");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const insertAtCursor = (snippet: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea) {
+      setContent((prev) => (prev ? `${prev}\n\n${snippet}\n` : snippet));
+      return;
+    }
+    const start = textarea.selectionStart ?? content.length;
+    const end = textarea.selectionEnd ?? content.length;
+    const before = content.slice(0, start);
+    const after = content.slice(end);
+    const needsLeadingNewline = before.length > 0 && !before.endsWith("\n");
+    const insertion = `${needsLeadingNewline ? "\n\n" : ""}${snippet}\n`;
+    const next = `${before}${insertion}${after}`;
+    setContent(next);
+    requestAnimationFrame(() => {
+      textarea.focus();
+      const cursorPos = before.length + insertion.length;
+      textarea.setSelectionRange(cursorPos, cursorPos);
+    });
+  };
 
   return (
     <form action={action} className="flex flex-col gap-5">
@@ -87,38 +110,42 @@ export default function PostForm({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <label htmlFor="content" className="text-sm font-medium text-slate-300">
             內容（支援 Markdown）
           </label>
-          <div className="flex overflow-hidden rounded-md border border-slate-700">
-            <button
-              type="button"
-              onClick={() => setTab("edit")}
-              className={`px-3 py-1 text-xs font-mono transition-colors ${
-                tab === "edit"
-                  ? "bg-cyan-500/20 text-cyan-200"
-                  : "bg-slate-950 text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              ✏️ 編輯
-            </button>
-            <button
-              type="button"
-              onClick={() => setTab("preview")}
-              className={`px-3 py-1 text-xs font-mono transition-colors ${
-                tab === "preview"
-                  ? "bg-cyan-500/20 text-cyan-200"
-                  : "bg-slate-950 text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              👁 預覽
-            </button>
+          <div className="flex items-center gap-3">
+            <ImageUploader onUploaded={insertAtCursor} />
+            <div className="flex overflow-hidden rounded-md border border-slate-700">
+              <button
+                type="button"
+                onClick={() => setTab("edit")}
+                className={`px-3 py-1 text-xs font-mono transition-colors ${
+                  tab === "edit"
+                    ? "bg-cyan-500/20 text-cyan-200"
+                    : "bg-slate-950 text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                ✏️ 編輯
+              </button>
+              <button
+                type="button"
+                onClick={() => setTab("preview")}
+                className={`px-3 py-1 text-xs font-mono transition-colors ${
+                  tab === "preview"
+                    ? "bg-cyan-500/20 text-cyan-200"
+                    : "bg-slate-950 text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                👁 預覽
+              </button>
+            </div>
           </div>
         </div>
 
         {tab === "edit" ? (
           <textarea
+            ref={textareaRef}
             id="content"
             name="content"
             required
