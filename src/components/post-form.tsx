@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import ReactMarkdown from "react-markdown";
 import SubmitButton from "./submit-button";
+import MarkdownContent from "./markdown-content";
 
 const inputClass =
   "rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-white outline-none focus:border-cyan-400";
@@ -137,7 +137,7 @@ export default function PostForm({
               )}
               {content ? (
                 <article className="prose prose-invert max-w-none prose-headings:text-white prose-a:text-cyan-400">
-                  <ReactMarkdown>{content}</ReactMarkdown>
+                  <MarkdownContent content={content} />
                 </article>
               ) : (
                 <p className="text-sm text-slate-500">尚無內容可預覽</p>

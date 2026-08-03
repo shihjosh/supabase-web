@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ReactMarkdown from "react-markdown";
 import { createClient } from "@/lib/supabase/server";
 import Comments from "@/components/comments";
+import MarkdownContent from "@/components/markdown-content";
 
 export const revalidate = 0;
 
@@ -42,7 +42,7 @@ export default async function BlogPostPage({
           })}
         </p>
         <h1>{post.title}</h1>
-        <ReactMarkdown>{post.content}</ReactMarkdown>
+        <MarkdownContent content={post.content} />
       </article>
 
       {post.tags && post.tags.length > 0 && (
