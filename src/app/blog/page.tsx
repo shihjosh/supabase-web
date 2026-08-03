@@ -7,6 +7,17 @@ export const metadata = {
 
 export const revalidate = 0;
 
+function extractFirstImage(content: string | null | undefined): string | null {
+  if (!content) return null;
+  // Markdown 圖片語法 ![alt](url)
+  const mdMatch = content.match(/!\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/);
+  if (mdMatch) return mdMatch[1];
+  // 內嵌 <img src="...">
+  const htmlMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+  if (htmlMatch) return htmlMatch[1];
+  return null;
+}
+
 export default async function BlogPage({
   searchParams,
 }: {
@@ -17,7 +28,7 @@ export default async function BlogPage({
 
   let query = supabase
     .from("posts")
-    .select("slug, title, excerpt, created_at, tags")
+    .select("slug, title, excerpt, created_at, tags, content")
     .eq("published", true)
     .order("created_at", { ascending: false });
 
@@ -87,39 +98,54 @@ export default async function BlogPage({
       )}
 
       <div className="flex flex-col gap-4">
-        {posts?.map((post) => (
-          <Link
-            key={post.slug}
-            href={`/blog/${post.slug}`}
-            className="group flex flex-col gap-1 rounded-xl border border-slate-800 bg-slate-900/40 p-4 backdrop-blur transition hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(34,211,238,0.12)]"
-          >
-            <p className="font-mono text-xs text-cyan-400">
-              {new Date(post.created_at).toLocaleDateString("zh-TW", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </p>
-            <h2 className="text-xl font-medium text-white group-hover:text-cyan-300">
-              {post.title}
-            </h2>
-            {post.excerpt && (
-              <p className="text-slate-400">{post.excerpt}</p>
-            )}
-            {post.tags && post.tags.length > 0 && (
-              <div className="mt-1 flex flex-wrap gap-1.5">
-                {post.tags.map((t: string) => (
-                  <span
-                    key={t}
-                    className="rounded-full border border-slate-700 bg-slate-800/60 px-2 py-0.5 font-mono text-xs text-slate-400"
-                  >
-                    #{t}
-                  </span>
-                ))}
+        {posts?.map((post) => {
+          const thumbnail = extractFirstImage(post.content);
+          return (
+            <Link
+              key={post.slug}
+              href={`/blog/${post.slug}`}
+              className="group flex gap-4 rounded-xl border border-slate-800 bg-slate-900/40 p-4 backdrop-blur transition hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(34,211,238,0.12)]"
+            >
+              {thumbnail && (
+                <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg border border-slate-700 bg-slate-950 sm:h-28 sm:w-28">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={thumbnail}
+                    alt=""
+                    className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                  />
+                </div>
+              )}
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <p className="font-mono text-xs text-cyan-400">
+                  {new Date(post.created_at).toLocaleDateString("zh-TW", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+                <h2 className="text-xl font-medium text-white group-hover:text-cyan-300">
+                  {post.title}
+                </h2>
+                {post.excerpt && (
+                  <p className="line-clamp-2 text-slate-400">{post.excerpt}</p>
+                )}
+                {post.tags && post.tags.length > 0 && (
+                  <div className="mt-1 flex flex-wrap gap-1.5">
+                    {post.tags.map((t: string) => (
+                      <span
+                        key={t}
+                        className="rounded-full border border-slate-700 bg-slate-800/60 px-2 py-0.5 font-mono text-xs text-slate-400"
+                      >
+                        #{t}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
     </main>
   );
