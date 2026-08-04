@@ -12,6 +12,11 @@ export default async function Home() {
     <main className="relative mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-10 overflow-hidden px-6 py-24 text-center">
       <BattlefieldBackground />
       <BossIntro />
+      {/* 進場後持續循環的 HUD 掃描光束 */}
+      <div
+        className="animate-hud-sweep pointer-events-none absolute inset-y-0 left-0 z-10 w-1/3 bg-gradient-to-r from-transparent via-cyan-300/25 to-transparent"
+        style={{ animationDelay: "4.5s" }}
+      />
       <span
         className="animate-boot-flicker relative z-10 inline-flex items-center gap-2 rounded border border-cyan-500/40 bg-cyan-500/10 px-3 py-1 font-mono text-xs tracking-widest text-cyan-400"
         style={{ animationDelay: "0.1s" }}
@@ -24,7 +29,9 @@ export default async function Home() {
         style={{ animationDelay: "0.3s" }}
       >
         <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
-          你好，我是 <span className="text-cyan-400">Josh</span> 👋
+          <span className="animate-typewriter" style={{ animationDelay: "0.3s" }}>
+            你好，我是 <span className="text-cyan-400">Josh</span> 👋
+          </span>
         </h1>
         <p className="max-w-md text-lg leading-8 text-slate-400">
           歡迎來到我的個人網站。這裡有我的自我介紹，也有我不定期更新的部落格。
