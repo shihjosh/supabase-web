@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import Comments from "@/components/comments";
 import MarkdownContent from "@/components/markdown-content";
 import ReadingProgress from "@/components/reading-progress";
+import TableOfContents from "@/components/table-of-contents";
 
 export const revalidate = 0;
 
@@ -44,6 +45,7 @@ export default async function BlogPostPage({
           })}
         </p>
         <h1>{post.title}</h1>
+        <TableOfContents content={post.content} />
         <MarkdownContent content={post.content} />
       </article>
 

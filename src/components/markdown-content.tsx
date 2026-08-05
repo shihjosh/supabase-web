@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import rehypeSlug from "rehype-slug";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import type { Schema } from "hast-util-sanitize";
 
@@ -74,7 +75,11 @@ const schema: Schema = {
   tagNames: [...(defaultSchema.tagNames ?? []), ...svgTagNames],
   attributes: {
     ...defaultSchema.attributes,
-    "*": [...((defaultSchema.attributes && defaultSchema.attributes["*"]) ?? []), "style"],
+    "*": [
+      ...((defaultSchema.attributes && defaultSchema.attributes["*"]) ?? []),
+      "style",
+      "id",
+    ],
     ...Object.fromEntries(svgTagNames.map((tag) => [tag, svgAttributes])),
   },
 };
@@ -113,7 +118,7 @@ function CodeBlock({ children, ...props }: React.HTMLAttributes<HTMLPreElement>)
 export default function MarkdownContent({ content }: { content: string }) {
   return (
     <ReactMarkdown
-      rehypePlugins={[rehypeRaw, [rehypeSanitize, schema]]}
+      rehypePlugins={[rehypeRaw, rehypeSlug, [rehypeSanitize, schema]]}
       components={{ pre: CodeBlock }}
     >
       {content}
