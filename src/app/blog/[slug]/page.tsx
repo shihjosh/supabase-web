@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Comments from "@/components/comments";
 import MarkdownContent from "@/components/markdown-content";
+import ReadingProgress from "@/components/reading-progress";
 
 export const revalidate = 0;
 
@@ -26,6 +27,7 @@ export default async function BlogPostPage({
 
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
+      <ReadingProgress />
       <Link
         href="/blog"
         className="mb-8 inline-block font-mono text-sm text-slate-500 hover:text-cyan-300"
