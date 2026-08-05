@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
@@ -78,9 +79,43 @@ const schema: Schema = {
   },
 };
 
+function CodeBlock({ children, ...props }: React.HTMLAttributes<HTMLPreElement>) {
+  const preRef = useRef<HTMLPreElement>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    const text = preRef.current?.textContent ?? "";
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // clipboard API 不可用時靜默失敗
+    }
+  };
+
+  return (
+    <div className="group relative">
+      <button
+        type="button"
+        onClick={handleCopy}
+        className="absolute right-2 top-2 z-10 rounded-md border border-slate-700 bg-slate-800/80 px-2 py-1 font-mono text-xs text-slate-400 opacity-0 transition-opacity hover:border-cyan-400/50 hover:text-cyan-300 group-hover:opacity-100"
+      >
+        {copied ? "已複製 ✓" : "複製"}
+      </button>
+      <pre ref={preRef} {...props}>
+        {children}
+      </pre>
+    </div>
+  );
+}
+
 export default function MarkdownContent({ content }: { content: string }) {
   return (
-    <ReactMarkdown rehypePlugins={[rehypeRaw, [rehypeSanitize, schema]]}>
+    <ReactMarkdown
+      rehypePlugins={[rehypeRaw, [rehypeSanitize, schema]]}
+      components={{ pre: CodeBlock }}
+    >
       {content}
     </ReactMarkdown>
   );
