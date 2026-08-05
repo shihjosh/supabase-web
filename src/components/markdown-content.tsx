@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSlug from "rehype-slug";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
@@ -118,6 +119,7 @@ function CodeBlock({ children, ...props }: React.HTMLAttributes<HTMLPreElement>)
 export default function MarkdownContent({ content }: { content: string }) {
   return (
     <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
       rehypePlugins={[rehypeRaw, rehypeSlug, [rehypeSanitize, schema]]}
       components={{ pre: CodeBlock }}
     >
