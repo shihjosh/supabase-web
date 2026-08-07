@@ -26,7 +26,7 @@ export default async function NewPostPage({
         新增文章
       </h1>
 
-      <PostForm action={createPost} submitLabel="發佈文章" error={error} />
+      <PostForm action={createPost} submitLabel="儲存文章" error={error} />
     </main>
   );
 }

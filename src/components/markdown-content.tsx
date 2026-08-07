@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import * as React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -85,6 +86,19 @@ const schema: Schema = {
   },
 };
 
+function getCodeText(node: React.ReactNode): string {
+  if (typeof node === "string") return node;
+  if (typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(getCodeText).join("");
+  if (
+    React.isValidElement<{ children?: React.ReactNode }>(node) &&
+    node.props?.children !== undefined
+  ) {
+    return getCodeText(node.props.children);
+  }
+  return "";
+}
+
 function CodeBlock({ children, ...props }: React.HTMLAttributes<HTMLPreElement>) {
   const preRef = useRef<HTMLPreElement>(null);
   const [copied, setCopied] = useState(false);
@@ -100,6 +114,13 @@ function CodeBlock({ children, ...props }: React.HTMLAttributes<HTMLPreElement>)
     }
   };
 
+  const rawText = getCodeText(children);
+  // 去掉結尾多餘的換行，避免多出一個空白行號
+  const lines = rawText.replace(/\n$/, "").split("\n");
+  const codeClassName = React.isValidElement<{ className?: string }>(children)
+    ? children.props?.className
+    : undefined;
+
   return (
     <div className="group relative">
       <button
@@ -109,8 +130,20 @@ function CodeBlock({ children, ...props }: React.HTMLAttributes<HTMLPreElement>)
       >
         {copied ? "已複製 ✓" : "複製"}
       </button>
-      <pre ref={preRef} {...props}>
-        {children}
+      <pre ref={preRef} {...props} className={`${props.className ?? ""} !p-0`.trim()}>
+        <code className={`${codeClassName ?? ""} grid py-3`}>
+          {lines.map((line, i) => (
+            <span
+              key={i}
+              className="grid grid-cols-[3ch_1fr] gap-4 px-4"
+            >
+              <span className="select-none text-right text-slate-600">
+                {i + 1}
+              </span>
+              <span className="whitespace-pre">{line || "\u00A0"}</span>
+            </span>
+          ))}
+        </code>
       </pre>
     </div>
   );

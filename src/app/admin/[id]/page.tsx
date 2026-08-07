@@ -21,7 +21,7 @@ export default async function EditPostPage({
 
   const { data: post } = await supabase
     .from("posts")
-    .select("id, slug, title, excerpt, content, published, tags")
+    .select("id, slug, title, excerpt, content, published, scheduled_at, tags")
     .eq("id", id)
     .single();
 
@@ -58,6 +58,7 @@ export default async function EditPostPage({
           tags: (post.tags ?? []).join(", "),
           content: post.content,
           published: post.published,
+          scheduledAt: post.scheduled_at,
         }}
       />
     </main>

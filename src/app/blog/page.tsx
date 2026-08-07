@@ -35,7 +35,7 @@ export default async function BlogPage({
   let query = supabase
     .from("posts")
     .select("slug, title, excerpt, created_at, tags, content", { count: "exact" })
-    .eq("published", true)
+    .or(`published.eq.true,scheduled_at.lte.${new Date().toISOString()}`)
     .order("created_at", { ascending: false })
     .range(from, to);
 
@@ -52,7 +52,7 @@ export default async function BlogPage({
   const { data: tagRows } = await supabase
     .from("posts")
     .select("tags")
-    .eq("published", true);
+    .or(`published.eq.true,scheduled_at.lte.${new Date().toISOString()}`);
 
   const allTags = Array.from(
     new Set((tagRows ?? []).flatMap((row) => row.tags ?? []))

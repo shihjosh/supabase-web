@@ -19,7 +19,7 @@ export default async function BlogPostPage({
     .from("posts")
     .select("title, content, created_at, tags")
     .eq("slug", slug)
-    .eq("published", true)
+    .or(`published.eq.true,scheduled_at.lte.${new Date().toISOString()}`)
     .single();
 
   if (!post) {

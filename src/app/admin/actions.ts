@@ -23,34 +23,66 @@ function parseTags(input: string) {
   );
 }
 
-export async function createPost(formData: FormData) {
-  const supabase = await createClient();
+// 將 <input type="datetime-local"> 的字串（本地時間，無時區資訊）
+// 轉成 ISO 字串存進資料庫；空字串則回傳 null。
+function parseScheduledAt(input: string) {
+  const trimmed = input.trim();
+  if (!trimmed) return null;
+  const date = new Date(trimmed);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toISOString();
+}
 
+type PostFields = {
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  content: string;
+  published: boolean;
+  scheduled_at: string | null;
+  tags: string[];
+};
+
+function buildFields(formData: FormData, slugFallback?: string): PostFields | null {
   const title = String(formData.get("title") ?? "").trim();
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
-  const published = formData.get("published") === "on";
+  const status = String(formData.get("status") ?? "draft"); // draft | scheduled | published
+  const scheduledAtRaw = String(formData.get("scheduled_at") ?? "");
   const tags = parseTags(String(formData.get("tags") ?? ""));
   let slug = String(formData.get("slug") ?? "").trim();
 
-  if (!slug) {
-    slug = slugify(title);
-  } else {
-    slug = slugify(slug);
-  }
+  slug = slugify(slug || slugFallback || title);
 
   if (!title || !content || !slug) {
-    redirect("/admin/new?error=請填寫標題、內容與網址代稱");
+    return null;
   }
 
-  const { error } = await supabase.from("posts").insert({
+  const scheduledAt = status === "scheduled" ? parseScheduledAt(scheduledAtRaw) : null;
+
+  // status === "scheduled" 但沒有填有效時間 → 視為草稿，避免誤發佈
+  const published = status === "published";
+
+  return {
     slug,
     title,
     excerpt: excerpt || null,
     content,
     published,
+    scheduled_at: status === "scheduled" ? scheduledAt : null,
     tags,
-  });
+  };
+}
+
+export async function createPost(formData: FormData) {
+  const supabase = await createClient();
+  const fields = buildFields(formData);
+
+  if (!fields) {
+    redirect("/admin/new?error=請填寫標題、內容與網址代稱");
+  }
+
+  const { error } = await supabase.from("posts").insert(fields);
 
   if (error) {
     redirect(`/admin/new?error=${encodeURIComponent(error.message)}`);
@@ -63,29 +95,13 @@ export async function createPost(formData: FormData) {
 
 export async function updatePost(id: string, formData: FormData) {
   const supabase = await createClient();
+  const fields = buildFields(formData);
 
-  const title = String(formData.get("title") ?? "").trim();
-  const excerpt = String(formData.get("excerpt") ?? "").trim();
-  const content = String(formData.get("content") ?? "").trim();
-  const published = formData.get("published") === "on";
-  const tags = parseTags(String(formData.get("tags") ?? ""));
-  const slug = slugify(String(formData.get("slug") ?? "").trim());
-
-  if (!title || !content || !slug) {
+  if (!fields) {
     redirect(`/admin/${id}?error=請填寫標題、內容與網址代稱`);
   }
 
-  const { error } = await supabase
-    .from("posts")
-    .update({
-      slug,
-      title,
-      excerpt: excerpt || null,
-      content,
-      published,
-      tags,
-    })
-    .eq("id", id);
+  const { error } = await supabase.from("posts").update(fields).eq("id", id);
 
   if (error) {
     redirect(`/admin/${id}?error=${encodeURIComponent(error.message)}`);
@@ -93,7 +109,7 @@ export async function updatePost(id: string, formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath("/blog");
-  revalidatePath(`/blog/${slug}`);
+  revalidatePath(`/blog/${fields.slug}`);
   redirect("/admin");
 }
 

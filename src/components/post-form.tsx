@@ -8,6 +8,8 @@ import ImageUploader from "./image-uploader";
 const inputClass =
   "rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-white outline-none focus:border-cyan-400";
 
+type PostStatus = "draft" | "scheduled" | "published";
+
 type PostFormProps = {
   action: (formData: FormData) => void | Promise<void>;
   defaultValues?: {
@@ -17,10 +19,28 @@ type PostFormProps = {
     tags?: string;
     content?: string;
     published?: boolean;
+    scheduledAt?: string | null;
   };
   submitLabel: string;
   error?: string;
 };
+
+// 將資料庫存的 ISO 字串轉成 <input type="datetime-local"> 需要的本地時間格式
+function toDatetimeLocal(iso?: string | null) {
+  if (!iso) return "";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate()
+  )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+function initialStatus(defaultValues?: PostFormProps["defaultValues"]): PostStatus {
+  if (defaultValues?.published) return "published";
+  if (defaultValues?.scheduledAt) return "scheduled";
+  return defaultValues ? "draft" : "published";
+}
 
 export default function PostForm({
   action,
@@ -31,6 +51,7 @@ export default function PostForm({
   const [title, setTitle] = useState(defaultValues?.title ?? "");
   const [content, setContent] = useState(defaultValues?.content ?? "");
   const [tab, setTab] = useState<"edit" | "preview">("edit");
+  const [status, setStatus] = useState<PostStatus>(initialStatus(defaultValues));
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const insertAtCursor = (snippet: string) => {
@@ -174,15 +195,67 @@ export default function PostForm({
         )}
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-slate-300">
-        <input
-          type="checkbox"
-          name="published"
-          defaultChecked={defaultValues?.published ?? true}
-          className="h-4 w-4"
-        />
-        發佈（取消勾選則存為草稿）
-      </label>
+      <div className="flex flex-col gap-1.5">
+        <span className="text-sm font-medium text-slate-300">發佈狀態</span>
+        <div className="flex overflow-hidden rounded-md border border-slate-700 w-fit">
+          <button
+            type="button"
+            onClick={() => setStatus("draft")}
+            className={`px-4 py-1.5 text-sm font-medium transition-colors ${
+              status === "draft"
+                ? "bg-slate-700/60 text-slate-100"
+                : "bg-slate-950 text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            📝 草稿
+          </button>
+          <button
+            type="button"
+            onClick={() => setStatus("scheduled")}
+            className={`px-4 py-1.5 text-sm font-medium transition-colors ${
+              status === "scheduled"
+                ? "bg-amber-500/20 text-amber-200"
+                : "bg-slate-950 text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            ⏰ 排程發布
+          </button>
+          <button
+            type="button"
+            onClick={() => setStatus("published")}
+            className={`px-4 py-1.5 text-sm font-medium transition-colors ${
+              status === "published"
+                ? "bg-emerald-500/20 text-emerald-200"
+                : "bg-slate-950 text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            ✅ 立即發佈
+          </button>
+        </div>
+        <input type="hidden" name="status" value={status} />
+
+        {status === "scheduled" && (
+          <div className="mt-2 flex flex-col gap-1.5">
+            <label
+              htmlFor="scheduled_at"
+              className="text-sm font-medium text-slate-300"
+            >
+              排程發布時間
+            </label>
+            <input
+              id="scheduled_at"
+              name="scheduled_at"
+              type="datetime-local"
+              required
+              defaultValue={toDatetimeLocal(defaultValues?.scheduledAt)}
+              className={`${inputClass} w-fit`}
+            />
+            <p className="text-xs text-slate-500">
+              時間一到，文章會自動出現在部落格頁面，無需手動操作。
+            </p>
+          </div>
+        )}
+      </div>
 
       {error && <p className="text-sm text-red-400">{error}</p>}
 
