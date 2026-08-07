@@ -25,15 +25,29 @@ type PostFormProps = {
   error?: string;
 };
 
-// 將資料庫存的 ISO 字串轉成 <input type="datetime-local"> 需要的本地時間格式
-function toDatetimeLocal(iso?: string | null) {
-  if (!iso) return "";
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "";
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
-  )}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+// 將資料庫存的 ISO 字串轉成台灣時區（Asia/Taipei）的 date / time 欄位值，
+// 供 <input type="date"> 與 <input type="time"> 使用。
+// 不使用瀏覽器本地時區，避免因裝置時區不同造成顯示錯誤。
+function toTaipeiDateTimeParts(iso?: string | null): { date: string; time: string } {
+  if (!iso) return { date: "", time: "" };
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return { date: "", time: "" };
+
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Taipei",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(d);
+
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return {
+    date: `${get("year")}-${get("month")}-${get("day")}`,
+    time: `${get("hour")}:${get("minute")}`,
+  };
 }
 
 function initialStatus(defaultValues?: PostFormProps["defaultValues"]): PostStatus {
@@ -52,6 +66,7 @@ export default function PostForm({
   const [content, setContent] = useState(defaultValues?.content ?? "");
   const [tab, setTab] = useState<"edit" | "preview">("edit");
   const [status, setStatus] = useState<PostStatus>(initialStatus(defaultValues));
+  const scheduledParts = toTaipeiDateTimeParts(defaultValues?.scheduledAt);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const insertAtCursor = (snippet: string) => {
@@ -236,22 +251,29 @@ export default function PostForm({
 
         {status === "scheduled" && (
           <div className="mt-2 flex flex-col gap-1.5">
-            <label
-              htmlFor="scheduled_at"
-              className="text-sm font-medium text-slate-300"
-            >
-              排程發布時間
+            <label className="text-sm font-medium text-slate-300">
+              排程發布時間（台灣時間 UTC+8）
             </label>
-            <input
-              id="scheduled_at"
-              name="scheduled_at"
-              type="datetime-local"
-              required
-              defaultValue={toDatetimeLocal(defaultValues?.scheduledAt)}
-              className={`${inputClass} w-fit`}
-            />
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                id="scheduled_date"
+                name="scheduled_date"
+                type="date"
+                required
+                defaultValue={scheduledParts.date}
+                className={inputClass}
+              />
+              <input
+                id="scheduled_time"
+                name="scheduled_time"
+                type="time"
+                required
+                defaultValue={scheduledParts.time}
+                className={inputClass}
+              />
+            </div>
             <p className="text-xs text-slate-500">
-              時間一到，文章會自動出現在部落格頁面，無需手動操作。
+              請選擇台灣時間的日期與時間，時間一到，文章會自動出現在部落格頁面，無需手動操作。
             </p>
           </div>
         )}

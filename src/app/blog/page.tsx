@@ -129,6 +129,7 @@ export default async function BlogPage({
               <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <p className="font-mono text-xs text-cyan-400">
                   {new Date(post.created_at).toLocaleDateString("zh-TW", {
+                    timeZone: "Asia/Taipei",
                     year: "numeric",
                     month: "long",
                     day: "numeric",

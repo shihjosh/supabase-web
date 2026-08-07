@@ -86,8 +86,8 @@ export default async function AdminPage() {
           } else if (isScheduledFuture) {
             statusLabel = `排程中 ・ ${new Date(post.scheduled_at!).toLocaleString(
               "zh-TW",
-              { dateStyle: "medium", timeStyle: "short" }
-            )}`;
+              { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Taipei" }
+            )}（台灣時間）`;
             dotClass = "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]";
           } else if (isScheduledPast) {
             statusLabel = "已排程發佈（前台可見）";
@@ -108,7 +108,9 @@ export default async function AdminPage() {
                 </div>
                 <p className="truncate font-mono text-sm text-slate-500">
                   /blog/{post.slug} ・{" "}
-                  {new Date(post.created_at).toLocaleDateString("zh-TW")} ・{" "}
+                  {new Date(post.created_at).toLocaleDateString("zh-TW", {
+                    timeZone: "Asia/Taipei",
+                  })} ・{" "}
                   {statusLabel}
                 </p>
               </div>

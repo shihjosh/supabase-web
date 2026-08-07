@@ -23,14 +23,32 @@ function parseTags(input: string) {
   );
 }
 
-// 將 <input type="datetime-local"> 的字串（本地時間，無時區資訊）
-// 轉成 ISO 字串存進資料庫；空字串則回傳 null。
-function parseScheduledAt(input: string) {
-  const trimmed = input.trim();
-  if (!trimmed) return null;
-  const date = new Date(trimmed);
-  if (Number.isNaN(date.getTime())) return null;
-  return date.toISOString();
+// 將「台灣時間」的日期＋時間字串（YYYY-MM-DD, HH:mm）
+// 轉成正確的 UTC ISO 字串存進資料庫。
+// 台灣（Asia/Taipei）全年固定 UTC+8，無日光節約時間問題。
+function parseScheduledAt(dateStr: string, timeStr: string) {
+  const date = dateStr.trim();
+  const time = timeStr.trim();
+  if (!date || !time) return null;
+
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+  const timeMatch = /^(\d{2}):(\d{2})$/.exec(time);
+  if (!match || !timeMatch) return null;
+
+  const [, year, month, day] = match;
+  const [, hour, minute] = timeMatch;
+
+  // 直接以 "台灣時間 = UTC+8" 組出 UTC 時間戳，不依賴伺服器所在時區。
+  const utcMs = Date.UTC(
+    Number(year),
+    Number(month) - 1,
+    Number(day),
+    Number(hour) - 8,
+    Number(minute)
+  );
+  const utcDate = new Date(utcMs);
+  if (Number.isNaN(utcDate.getTime())) return null;
+  return utcDate.toISOString();
 }
 
 type PostFields = {
@@ -48,7 +66,8 @@ function buildFields(formData: FormData, slugFallback?: string): PostFields | nu
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const content = String(formData.get("content") ?? "").trim();
   const status = String(formData.get("status") ?? "draft"); // draft | scheduled | published
-  const scheduledAtRaw = String(formData.get("scheduled_at") ?? "");
+  const scheduledDateRaw = String(formData.get("scheduled_date") ?? "");
+  const scheduledTimeRaw = String(formData.get("scheduled_time") ?? "");
   const tags = parseTags(String(formData.get("tags") ?? ""));
   let slug = String(formData.get("slug") ?? "").trim();
 
@@ -58,7 +77,8 @@ function buildFields(formData: FormData, slugFallback?: string): PostFields | nu
     return null;
   }
 
-  const scheduledAt = status === "scheduled" ? parseScheduledAt(scheduledAtRaw) : null;
+  const scheduledAt =
+    status === "scheduled" ? parseScheduledAt(scheduledDateRaw, scheduledTimeRaw) : null;
 
   // status === "scheduled" 但沒有填有效時間 → 視為草稿，避免誤發佈
   const published = status === "published";

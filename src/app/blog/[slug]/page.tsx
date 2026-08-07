@@ -39,6 +39,7 @@ export default async function BlogPostPage({
       <article className="prose prose-invert max-w-none prose-headings:text-white prose-a:text-cyan-400">
         <p className="font-mono text-xs text-cyan-400">
           {new Date(post.created_at).toLocaleDateString("zh-TW", {
+            timeZone: "Asia/Taipei",
             year: "numeric",
             month: "long",
             day: "numeric",
