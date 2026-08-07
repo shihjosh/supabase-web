@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import BlogSearchBox from "@/components/blog-search-box";
 
 export const metadata = {
   title: "部落格 | Josh",
@@ -23,29 +24,58 @@ function extractFirstImage(content: string | null | undefined): string | null {
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tag?: string; page?: string }>;
+  searchParams: Promise<{ tag?: string; page?: string; q?: string }>;
 }) {
-  const { tag, page: pageParam } = await searchParams;
+  const { tag, page: pageParam, q } = await searchParams;
+  const searchQuery = (q ?? "").trim();
   const currentPage = Math.max(1, Number(pageParam) || 1);
   const from = (currentPage - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
   const supabase = await createClient();
 
-  let query = supabase
-    .from("posts")
-    .select("slug, title, excerpt, created_at, tags, content", { count: "exact" })
-    .or(`published.eq.true,scheduled_at.lte.${new Date().toISOString()}`)
-    .order("created_at", { ascending: false })
-    .range(from, to);
+  let posts: {
+    slug: string;
+    title: string;
+    excerpt: string | null;
+    content: string;
+    created_at: string;
+    tags: string[];
+  }[] = [];
+  let error: { message: string } | null = null;
+  let totalCount = 0;
 
-  if (tag) {
-    query = query.contains("tags", [tag]);
+  if (searchQuery) {
+    const { data, error: rpcError } = await supabase.rpc("search_posts", {
+      search_query: searchQuery,
+      tag_filter: tag ?? null,
+      page_limit: PAGE_SIZE,
+      page_offset: from,
+    });
+    if (rpcError) {
+      error = rpcError;
+    } else {
+      posts = data ?? [];
+      totalCount = data?.[0]?.total_count ?? 0;
+    }
+  } else {
+    let query = supabase
+      .from("posts")
+      .select("slug, title, excerpt, created_at, tags, content", { count: "exact" })
+      .or(`published.eq.true,scheduled_at.lte.${new Date().toISOString()}`)
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
+    if (tag) {
+      query = query.contains("tags", [tag]);
+    }
+
+    const { data, error: queryError, count } = await query;
+    posts = data ?? [];
+    error = queryError;
+    totalCount = count ?? 0;
   }
 
-  const { data: posts, error, count } = await query;
-
-  const totalCount = count ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
   // 取得所有已發佈文章的標籤，用來顯示標籤雲
@@ -67,10 +97,12 @@ export default async function BlogPage({
         </span>
       </div>
 
+      <BlogSearchBox />
+
       {allTags.length > 0 && (
         <div className="mb-10 flex flex-wrap items-center gap-2">
           <Link
-            href="/blog"
+            href={{ pathname: "/blog", query: searchQuery ? { q: searchQuery } : {} }}
             className={`rounded-full border px-3 py-1 font-mono text-xs font-medium transition-colors ${
               !tag
                 ? "border-cyan-400 bg-cyan-500/20 text-cyan-200 shadow-[0_0_10px_rgba(34,211,238,0.3)]"
@@ -82,7 +114,10 @@ export default async function BlogPage({
           {allTags.map((t) => (
             <Link
               key={t}
-              href={`/blog?tag=${encodeURIComponent(t)}`}
+              href={{
+                pathname: "/blog",
+                query: { tag: t, ...(searchQuery ? { q: searchQuery } : {}) },
+              }}
               className={`rounded-full border px-3 py-1 font-mono text-xs font-medium transition-colors ${
                 tag === t
                   ? "border-cyan-400 bg-cyan-500/20 text-cyan-200 shadow-[0_0_10px_rgba(34,211,238,0.3)]"
@@ -103,7 +138,11 @@ export default async function BlogPage({
 
       {!error && (!posts || posts.length === 0) && (
         <p className="text-slate-500">
-          {tag ? `沒有標籤為 #${tag} 的文章。` : "目前還沒有文章。"}
+          {searchQuery
+            ? `找不到符合「${searchQuery}」的文章。`
+            : tag
+              ? `沒有標籤為 #${tag} 的文章。`
+              : "目前還沒有文章。"}
         </p>
       )}
 
@@ -166,6 +205,7 @@ export default async function BlogPage({
               pathname: "/blog",
               query: {
                 ...(tag ? { tag } : {}),
+                ...(searchQuery ? { q: searchQuery } : {}),
                 ...(currentPage > 1 ? { page: currentPage - 1 } : {}),
               },
             }}
@@ -186,6 +226,7 @@ export default async function BlogPage({
                 pathname: "/blog",
                 query: {
                   ...(tag ? { tag } : {}),
+                  ...(searchQuery ? { q: searchQuery } : {}),
                   ...(p > 1 ? { page: p } : {}),
                 },
               }}
@@ -204,6 +245,7 @@ export default async function BlogPage({
               pathname: "/blog",
               query: {
                 ...(tag ? { tag } : {}),
+                ...(searchQuery ? { q: searchQuery } : {}),
                 page: Math.min(totalPages, currentPage + 1),
               },
             }}
