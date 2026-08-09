@@ -43,6 +43,12 @@ export default async function AdminPage() {
         </div>
         <div className="flex items-center gap-3">
           <Link
+            href="/admin/analytics"
+            className="flex h-10 items-center justify-center rounded-md border border-slate-700 px-5 text-sm font-medium text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-cyan-300"
+          >
+            網站分析
+          </Link>
+          <Link
             href="/admin/about"
             className="flex h-10 items-center justify-center rounded-md border border-slate-700 px-5 text-sm font-medium text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-cyan-300"
           >

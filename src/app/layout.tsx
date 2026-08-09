@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Nav from "@/components/nav";
+import PageViewTracker from "@/components/page-view-tracker";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -33,6 +34,7 @@ export default function RootLayout({
         <div className="pointer-events-none fixed -top-32 -left-32 z-0 h-96 w-96 rounded-full bg-cyan-500/10 blur-[100px]" />
         <div className="pointer-events-none fixed top-1/3 -right-32 z-0 h-[28rem] w-[28rem] rounded-full bg-fuchsia-500/5 blur-[110px]" />
         <div className="relative z-10 flex min-h-full flex-1 flex-col">
+          <PageViewTracker />
           <Nav />
           <div className="flex flex-1 flex-col">{children}</div>
         </div>
