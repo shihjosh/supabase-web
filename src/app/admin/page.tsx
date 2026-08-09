@@ -29,7 +29,7 @@ export default async function AdminPage() {
 
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
-      <div className="mb-10 flex items-center justify-between">
+      <div className="mb-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="mb-2 flex items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-white">
@@ -41,31 +41,38 @@ export default async function AdminPage() {
           </div>
           <p className="font-mono text-sm text-slate-500">{user?.email}</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:gap-3">
           <Link
             href="/admin/analytics"
-            className="flex h-10 items-center justify-center rounded-md border border-slate-700 px-5 text-sm font-medium text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-cyan-300"
+            className="flex h-10 items-center justify-center gap-1.5 rounded-md border border-slate-700 px-4 text-sm font-medium text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-cyan-300 sm:px-5"
           >
-            網站分析
+            <span aria-hidden>📊</span>
+            <span className="sm:hidden">分析</span>
+            <span className="hidden sm:inline">網站分析</span>
           </Link>
           <Link
             href="/admin/about"
-            className="flex h-10 items-center justify-center rounded-md border border-slate-700 px-5 text-sm font-medium text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-cyan-300"
+            className="flex h-10 items-center justify-center gap-1.5 rounded-md border border-slate-700 px-4 text-sm font-medium text-slate-200 transition-colors hover:border-cyan-400/50 hover:text-cyan-300 sm:px-5"
           >
-            編輯自我介紹
+            <span aria-hidden>✏️</span>
+            <span className="sm:hidden">關於</span>
+            <span className="hidden sm:inline">編輯自我介紹</span>
           </Link>
           <Link
             href="/admin/new"
-            className="flex h-10 items-center justify-center rounded-md border border-cyan-400/60 bg-cyan-500/20 px-5 text-sm font-semibold text-cyan-200 shadow-[0_0_16px_rgba(34,211,238,0.2)] transition hover:bg-cyan-500/30"
+            className="flex h-10 items-center justify-center gap-1.5 rounded-md border border-cyan-400/60 bg-cyan-500/20 px-4 text-sm font-semibold text-cyan-200 shadow-[0_0_16px_rgba(34,211,238,0.2)] transition hover:bg-cyan-500/30 sm:px-5"
           >
-            新增文章
+            <span aria-hidden>➕</span>
+            <span className="sm:hidden">新增</span>
+            <span className="hidden sm:inline">新增文章</span>
           </Link>
           <form action={logout}>
             <SubmitButton
               pendingText="登出中..."
-              className="flex h-10 items-center justify-center rounded-md border border-slate-700 px-5 text-sm font-medium text-slate-300 transition-colors hover:border-red-400/50 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex h-10 items-center justify-center gap-1.5 rounded-md border border-slate-700 px-4 text-sm font-medium text-slate-300 transition-colors hover:border-red-400/50 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-60 sm:px-5"
             >
-              登出
+              <span aria-hidden>🚪</span>
+              <span>登出</span>
             </SubmitButton>
           </form>
         </div>
