@@ -7,8 +7,13 @@ export const metadata = {
 
 export const revalidate = 0;
 
-type DailyView = { day: string; views: number };
-type TopPost = { slug: string; title: string; views: number };
+type DailyView = { day: string; views: number; unique_visitors: number };
+type TopPost = {
+  slug: string;
+  title: string;
+  views: number;
+  unique_visitors: number;
+};
 
 function thirtyDaysAgoIso() {
   return new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
@@ -23,6 +28,7 @@ export default async function AnalyticsPage() {
     { data: topPostsRaw, error: topError },
     { count: totalViews30d },
     { count: totalViewsAll },
+    { data: uniqueVisitors30dRaw },
   ] = await Promise.all([
     supabase.rpc("daily_page_views", { days: 30 }),
     supabase.rpc("top_posts_by_views", {
@@ -34,10 +40,12 @@ export default async function AnalyticsPage() {
       .select("id", { count: "exact", head: true })
       .gte("created_at", since),
     supabase.from("page_views").select("id", { count: "exact", head: true }),
+    supabase.rpc("unique_visitors_since", { since }),
   ]);
 
   const dailyViews = (dailyViewsRaw ?? []) as DailyView[];
   const topPosts = (topPostsRaw ?? []) as TopPost[];
+  const uniqueVisitors30d = (uniqueVisitors30dRaw ?? 0) as number;
 
   const maxDailyViews = Math.max(1, ...dailyViews.map((d) => d.views));
   const maxTopViews = Math.max(1, ...topPosts.map((p) => p.views));
@@ -67,11 +75,19 @@ export default async function AnalyticsPage() {
       )}
 
       {/* 總覽卡片 */}
-      <div className="mb-10 grid grid-cols-2 gap-4 sm:grid-cols-2">
+      <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
           <p className="font-mono text-xs text-slate-500">近 30 天瀏覽數</p>
           <p className="mt-1 text-3xl font-bold text-cyan-300">
             {totalViews30d ?? 0}
+          </p>
+        </div>
+        <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
+          <p className="font-mono text-xs text-slate-500">
+            近 30 天不重複訪客
+          </p>
+          <p className="mt-1 text-3xl font-bold text-emerald-300">
+            {uniqueVisitors30d}
           </p>
         </div>
         <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-5">
@@ -81,6 +97,12 @@ export default async function AnalyticsPage() {
           </p>
         </div>
       </div>
+
+      <p className="mb-10 -mt-6 text-xs text-slate-600">
+        已自動過濾常見爬蟲流量，並對同裝置 30
+        分鐘內重複瀏覽同一頁面去重；不重複訪客以匿名瀏覽器 ID
+        統計，換裝置或清除瀏覽器資料會視為新訪客。
+      </p>
 
       {/* 每日瀏覽趨勢 */}
       <section className="mb-10">
@@ -94,7 +116,7 @@ export default async function AnalyticsPage() {
                 <div
                   key={d.day}
                   className="group relative flex-1"
-                  title={`${d.day}：${d.views} 次瀏覽`}
+                  title={`${d.day}：${d.views} 次瀏覽 ・ ${d.unique_visitors} 位訪客`}
                 >
                   <div
                     className="w-full rounded-t bg-cyan-500/60 transition-colors group-hover:bg-cyan-400"
@@ -152,6 +174,9 @@ export default async function AnalyticsPage() {
                 </div>
                 <span className="w-12 shrink-0 text-right font-mono text-sm text-cyan-300">
                   {post.views}
+                </span>
+                <span className="w-12 shrink-0 text-right font-mono text-xs text-emerald-400">
+                  {post.unique_visitors} 人
                 </span>
               </Link>
             ))}
