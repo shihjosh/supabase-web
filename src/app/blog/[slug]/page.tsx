@@ -5,6 +5,7 @@ import Comments from "@/components/comments";
 import MarkdownContent from "@/components/markdown-content";
 import ReadingProgress from "@/components/reading-progress";
 import TableOfContents from "@/components/table-of-contents";
+import BackToTop from "@/components/back-to-top";
 
 export const revalidate = 0;
 
@@ -65,6 +66,7 @@ export default async function BlogPostPage({
       )}
 
       <Comments />
+      <BackToTop />
     </main>
   );
 }
