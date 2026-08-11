@@ -22,7 +22,7 @@ function extractHeadings(markdown: string): Heading[] {
     }
     if (inCodeFence) continue;
 
-    const match = /^(#{2,3})\s+(.+)$/.exec(line.trim());
+    const match = /^(#{1,3})\s+(.+)$/.exec(line.trim());
     if (match) {
       const level = match[1].length;
       const text = match[2].replace(/[*_`~]/g, "").trim();
@@ -55,7 +55,7 @@ export default function TableOfContents({ content }: { content: string }) {
           {headings.map((h) => (
             <li
               key={h.id}
-              style={{ paddingLeft: `${(h.level - 2) * 1}rem` }}
+              style={{ paddingLeft: `${(h.level - 1) * 1}rem` }}
             >
               <a
                 href={`#${h.id}`}
