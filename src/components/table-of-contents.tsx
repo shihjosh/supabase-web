@@ -3,6 +3,12 @@
 import { useMemo, useState } from "react";
 import GithubSlugger from "github-slugger";
 
+// rehype-sanitize 預設會替 id/name 屬性加上 "user-content-" 前綴
+// （clobberPrefix，避免 DOM Clobbering 攻擊），
+// 因此文章內文標題實際渲染出的 id 會是 "user-content-<slug>"。
+// 目錄連結需要加上同樣的前綴，錨點跳轉才會對應到正確的標題。
+const ANCHOR_PREFIX = "user-content-";
+
 type Heading = {
   id: string;
   text: string;
@@ -58,7 +64,7 @@ export default function TableOfContents({ content }: { content: string }) {
               style={{ paddingLeft: `${(h.level - 1) * 1}rem` }}
             >
               <a
-                href={`#${h.id}`}
+                href={`#${ANCHOR_PREFIX}${h.id}`}
                 className="text-slate-400 transition-colors hover:text-cyan-300"
               >
                 {h.text}
