@@ -15,7 +15,8 @@ import {
 } from "./actions";
 
 export const metadata = {
-  title: "自我介紹後台 | Josh",
+  title: "自我介紹後台",
+  robots: { index: false, follow: false },
 };
 
 export const revalidate = 0;

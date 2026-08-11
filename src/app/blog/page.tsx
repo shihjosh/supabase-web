@@ -1,25 +1,16 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import BlogSearchBox from "@/components/blog-search-box";
+import { extractFirstImage } from "@/lib/post-utils";
 
 export const metadata = {
-  title: "部落格 | Josh",
+  title: "部落格",
+  description: "Josh 的技術部落格：雲端架構、DevOps、AI 工具與軟體開發筆記。",
 };
 
 export const revalidate = 0;
 
 const PAGE_SIZE = 10;
-
-function extractFirstImage(content: string | null | undefined): string | null {
-  if (!content) return null;
-  // Markdown 圖片語法 ![alt](url)
-  const mdMatch = content.match(/!\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/);
-  if (mdMatch) return mdMatch[1];
-  // 內嵌 <img src="...">
-  const htmlMatch = content.match(/<img[^>]+src=["']([^"']+)["']/i);
-  if (htmlMatch) return htmlMatch[1];
-  return null;
-}
 
 export default async function BlogPage({
   searchParams,
@@ -160,7 +151,7 @@ export default async function BlogPage({
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={thumbnail}
-                    alt=""
+                    alt={post.title}
                     className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                   />
                 </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Nav from "@/components/nav";
 import PageViewTracker from "@/components/page-view-tracker";
+import { SITE_URL, SITE_NAME, SITE_DESCRIPTION } from "@/lib/site";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,8 +16,25 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Josh | 部落格與自我介紹",
-  description: "個人部落格與自我介紹網站",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} | 部落格與自我介紹`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    type: "website",
+    locale: "zh_TW",
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} | 部落格與自我介紹`,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} | 部落格與自我介紹`,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export default function RootLayout({

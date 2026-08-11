@@ -2,7 +2,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
-  title: "網站分析 | Josh",
+  title: "網站分析",
+  robots: { index: false, follow: false },
 };
 
 export const revalidate = 0;

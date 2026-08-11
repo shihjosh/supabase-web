@@ -1,7 +1,9 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
-  title: "自我介紹 | Josh",
+  title: "自我介紹",
+  description: "Josh 的自我介紹：雲端架構與 DevOps 工程師，專長 AWS/GCP、容器化與 CI/CD 自動化部署。",
 };
 
 export const revalidate = 0;
@@ -78,12 +80,12 @@ export default async function AboutPage() {
                   ⚔️ 聯絡我
                 </a>
               )}
-              <a
+              <Link
                 href="/blog"
                 className="rounded-md border border-slate-600 px-5 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-slate-400 hover:text-white"
               >
                 📜 看部落格
-              </a>
+              </Link>
             </div>
           </div>
 

@@ -2,7 +2,8 @@ import { login } from "./actions";
 import SubmitButton from "@/components/submit-button";
 
 export const metadata = {
-  title: "登入 | Josh",
+  title: "登入",
+  robots: { index: false, follow: false },
 };
 
 export default async function LoginPage({

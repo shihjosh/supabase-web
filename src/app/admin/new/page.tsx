@@ -3,7 +3,8 @@ import { createPost } from "../actions";
 import PostForm from "@/components/post-form";
 
 export const metadata = {
-  title: "新增文章 | Josh",
+  title: "新增文章",
+  robots: { index: false, follow: false },
 };
 
 export default async function NewPostPage({

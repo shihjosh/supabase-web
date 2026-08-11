@@ -5,7 +5,8 @@ import { updatePost } from "../actions";
 import PostForm from "@/components/post-form";
 
 export const metadata = {
-  title: "編輯文章 | Josh",
+  title: "編輯文章",
+  robots: { index: false, follow: false },
 };
 
 export default async function EditPostPage({
